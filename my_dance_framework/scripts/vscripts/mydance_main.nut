@@ -47,7 +47,7 @@ function GetCurrentSurvivorCode(player) {
 // 1. DanceConfig — 所有可变参数集中在此
 // ==========================================
 
-DanceConfig <- {
+::DanceConfig <- {
 
     // ---- 角色代号 → 固定模型路径 ----
     // 绕开玩家自定义模型替换模组问题（原版硬编码，必须匹配 gestures mdl）
@@ -116,7 +116,7 @@ DanceConfig <- {
 // 2. MusicController — 副体1: 只管音乐
 // ==========================================
 
-MusicController <- {
+::MusicController <- {
 
     activeMusic = [],  // [{ path, entity }]
     _bgmRelay = null,  // 懒加载缓存
@@ -180,7 +180,7 @@ MusicController <- {
 // 3. CameraController — 副体2: 只管相机三件套 + 真人传送
 // ==========================================
 
-CameraController <- {
+::CameraController <- {
 
     camProp    = null,  // prop_dynamic (Introcam.mdl)
     viewControl = null, // point_viewcontrol_multiplayer
@@ -281,7 +281,7 @@ CameraController <- {
 // 4. LyricController — 副体3: 歌词字幕 (占位)
 // ==========================================
 
-LyricController <- {
+::LyricController <- {
 
     activeLyrics = [],
 
@@ -299,7 +299,7 @@ LyricController <- {
 // 5. DanceController — 主体: 只管 dummy 生命周期
 // ==========================================
 
-DanceController <- {
+::DanceController <- {
 
     dummies = [],  // [{ dummy, seqName, duration, musicPath }]
 
@@ -374,7 +374,7 @@ DanceController <- {
         }
 
         // 5k. [副体3] 占位: 歌词 setup
-        LyricController.setup(actionName, musicPath);
+        ::LyricController.setup(actionName, musicPath);
 
         // 5l. 注册到活跃列表 (精确按 targetname Kill, 不 FindByClassname 杀错)
         local duration = dummy.GetSequenceDuration(seqId);
@@ -438,7 +438,7 @@ DanceController <- {
         printl("[Dance] === _cleanupAll ===");
         ::MusicController.stopAll();
         ::CameraController.cleanup();
-        LyricController.cleanup();
+        ::LyricController.cleanup();
         printl("[Dance] === _cleanupAll 完成 ===");
     },
 };
