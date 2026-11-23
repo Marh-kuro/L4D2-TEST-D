@@ -1,0 +1,31 @@
+"AddonInfo"
+{
+	AddonTitle          "MyDance Framework v2.0"
+	AddonVersion        "2.0"
+	AddonDescription    "
+		高自由度跳舞框架 - 解耦架构
+		核心函数: commentary_dummy + EntFire("SetAnimation")
+		支持角色代号 + 动作名 + 相机 + 配置表
+		"
+	AddonAuthor         "TraeAI"
+	AddonAuthorSteamID  ""
+	AddonURL0           ""
+
+	AddonSteamAppID  550
+
+	AddonContent_BackgroundMovie 0
+	AddonContent_BossInfected    0
+	AddonContent_Campaign        0
+	AddonContent_CommonInfected  0
+	AddonContent_Map      0
+	AddonContent_Music    0
+	AddonContent_Prefab   0
+	AddonContent_Prop     0 
+	AddonContent_Script   1
+	AddonContent_Skin     0
+	AddonContent_Sound    0
+	AddonContent_Spray    0
+	AddonContent_Survivor 1
+	AddonContent_Weapon      0 
+	AddonContent_WeaponModel 0
+}

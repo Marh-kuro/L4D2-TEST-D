@@ -1,0 +1,19 @@
+﻿# 原版 VPK 解压目录
+*Part3-1.workshop/
+*Part3-2.workshop/
+*Part3-3.workshop/
+*Anims_Base.workshop/
+# 临时构建产物
+*.vpk
+sdk_temp/
+_extract/
+_full_extract/
+decompile_out/
+# 之前的 test_plugin
+test_plugin/
+# 解密工具和解密产物
+decrypt_ice.py
+dance_script_decrypted.*
+# 系统文件
+.DS_Store
+Thumbs.db
