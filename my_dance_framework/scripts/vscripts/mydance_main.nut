@@ -354,11 +354,7 @@ function GetCurrentSurvivorCode(player) {
         // 5g. 致命守护: sequence 不存在直接删
         local seqId = dummy.LookupSequence(seqName);
         if(seqId == -1) {
-            printl("[Dance] Error: Invalid animation sequence '" + seqName + "' in model " + modelPath);
-            printl("[Dance] 提示: 如果你替换了角色模型, 原版 d01~d61 sequence 可能丢失");
-            dummy.Kill();
-            ::CameraController.cleanup();
-            return false;
+            printl("[Dance] Warning: LookupSequence('" + seqName + "') returned -1, SetAnimation 仍会尝试 (原版不检查)");
         }
 
         // 5h. 渲染修复 (原版神坑, 721 是 EF_NODRAW|EF_NOFLASH 等标志组合)
@@ -377,7 +373,10 @@ function GetCurrentSurvivorCode(player) {
         ::LyricController.setup(actionName, musicPath);
 
         // 5l. 注册到活跃列表 (精确按 targetname Kill, 不 FindByClassname 杀错)
-        local duration = dummy.GetSequenceDuration(seqId);
+        local duration = 15;  // 默认 15 秒, GetSequenceDuration 可能失败
+        if(seqId != -1) {
+            duration = dummy.GetSequenceDuration(seqId);
+        }
         local session = {
             dummy     = dummy,
             seqName   = seqName,
