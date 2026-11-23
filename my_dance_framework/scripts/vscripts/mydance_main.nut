@@ -19,7 +19,7 @@ printl("[MyDance]          !mytest (兼容旧版)");
 // 0. 基础工具函数
 // ==========================================
 
-function GetPlayerLookPos(player) {
+function ::GetPlayerLookPos(player) {
     local startPt = player.EyePosition();
     local Angle = player.EyeAngles();
     local endPt = startPt + Angle.Forward().Scale(9999);
@@ -146,7 +146,7 @@ MusicController <- {
         }
 
         // 参数: (路径, 音量0-10, 传播距离, 衰减系数, 附着实体)
-        EmitAmbientSoundOn(path, volume, DanceConfig.music.distance, DanceConfig.music.falloff, attachEntity);
+        EmitAmbientSoundOn(path, volume, ::DanceConfig.music.distance, ::DanceConfig.music.falloff, attachEntity);
 
         this.activeMusic.append({ path = path, entity = attachEntity });
         printl("[Music] 开始播放: " + path + " (附着实体: " + attachEntity.GetName() + ")");
@@ -189,7 +189,7 @@ CameraController <- {
     setup = function(spawnPos, angles) {
         printl("[Camera] === 开始 setup ===");
 
-        if(!DanceConfig.camera.enabled) {
+        if(!::DanceConfig.camera.enabled) {
             printl("[Camera] 相机在配置里关闭, 跳过");
             return;
         }
@@ -198,7 +198,7 @@ CameraController <- {
         local propName = "dance_cam_" + UniqueString();
         this.camProp = SpawnEntityFromTable("prop_dynamic", {
             targetname = propName,
-            model      = DanceConfig.camera.model,
+            model      = ::DanceConfig.camera.model,
             origin     = spawnPos,
             angles     = angles.ToKVString(),
             rendermode = 10,  // 不可见
@@ -218,8 +218,8 @@ CameraController <- {
             parentname = propName,
             origin     = spawnPos,
             angles     = angles.ToKVString(),
-            spawnflags = DanceConfig.camera.spawnflags,  // 5 = 启用视角 + 忽略障碍
-            fov        = DanceConfig.camera.fov,          // 55 = 电影窄视角
+            spawnflags = ::DanceConfig.camera.spawnflags,  // 5 = 启用视角 + 忽略障碍
+            fov        = ::DanceConfig.camera.fov,          // 55 = 电影窄视角
         });
 
         if(this.viewControl == null) {
@@ -308,23 +308,23 @@ DanceController <- {
         printl("[Dance] === start 调用 model=" + modelCode + " action=" + actionName + " ===");
 
         // 5a. 查模型路径 (配置表)
-        local modelPath = DanceConfig.models[modelCode];
+        local modelPath = ::DanceConfig.models[modelCode];
         if(modelPath == null || modelPath == "") {
             printl("[Dance] Error: 未知角色代号 '" + modelCode + "'");
             return false;
         }
 
         // 5b. 查动作配置 (配置表)
-        local actionCfg = DanceConfig.actions[actionName];
+        local actionCfg = ::DanceConfig.actions[actionName];
         if(actionCfg == null) {
-            printl("[Dance] Error: 未知动作 '" + actionName + "' — 请在 DanceConfig.actions 里添加");
+            printl("[Dance] Error: 未知动作 '" + actionName + "' — 请在 ::DanceConfig.actions 里添加");
             return false;
         }
         local seqName = actionCfg.seq;
         local musicPath = actionCfg.music;
 
         // 5c. 射线取瞄准点
-        local spawnPos = GetPlayerLookPos(player);
+        local spawnPos = ::GetPlayerLookPos(player);
         if(spawnPos == null) {
             printl("[Dance] Error: 射线没有命中任何物体 (瞄准地面再试)");
             return false;
@@ -335,19 +335,19 @@ DanceController <- {
         local reverse_angle = Vector(look_angle.x, look_angle.y + 180, look_angle.z);
 
         // 5e. [副体2] 先 setup 相机 (如果启用)
-        CameraController.setup(spawnPos, reverse_angle);
+        ::CameraController.setup(spawnPos, reverse_angle);
 
         // 5f. Spawn dummy (必须用 commentary_dummy, 不能 prop_dynamic)
         local dummy = SpawnEntityFromTable("commentary_dummy", {
             origin     = spawnPos,
             angles     = reverse_angle.ToKVString(),  // 必须转 KV 字符串, 避免 QAngle 静默失败
             model      = modelPath,
-            LookAtPlayers = DanceConfig.dummy.lookAtPlayers,
+            LookAtPlayers = ::DanceConfig.dummy.lookAtPlayers,
         });
 
         if(dummy == null) {
             printl("[Dance] Error: commentary_dummy spawn 失败 — 确认模型路径 " + modelPath + " 存在");
-            CameraController.cleanup();  // 回滚相机 setup
+            ::CameraController.cleanup();  // 回滚相机 setup
             return false;
         }
 
@@ -357,20 +357,20 @@ DanceController <- {
             printl("[Dance] Error: Invalid animation sequence '" + seqName + "' in model " + modelPath);
             printl("[Dance] 提示: 如果你替换了角色模型, 原版 d01~d61 sequence 可能丢失");
             dummy.Kill();
-            CameraController.cleanup();
+            ::CameraController.cleanup();
             return false;
         }
 
         // 5h. 渲染修复 (原版神坑, 721 是 EF_NODRAW|EF_NOFLASH 等标志组合)
-        NetProps.SetPropInt(dummy, "m_fEffects", DanceConfig.dummy.effectsFix);
+        NetProps.SetPropInt(dummy, "m_fEffects", ::DanceConfig.dummy.effectsFix);
 
         // 5i. 施法! 必须用 EntFire (commentary_dummy.SetAnimation() 不是公开方法)
         EntFire(dummy.GetName(), "SetAnimation", seqName);
         printl("[Dance] EntFire SetAnimation '" + seqName + "' 已触发");
 
         // 5j. [副体1] 播放音乐 (如果启用)
-        if(DanceConfig.music.enabled) {
-            MusicController.play(musicPath, DanceConfig.music.volume, dummy);
+        if(::DanceConfig.music.enabled) {
+            ::MusicController.play(musicPath, ::DanceConfig.music.volume, dummy);
         }
 
         // 5k. [副体3] 占位: 歌词 setup
@@ -389,7 +389,7 @@ DanceController <- {
         // 5m. 安全定时清理 — 回调存在 dummy ScriptScope 里, RunScriptCode 直接调
         dummy.ValidateScriptScope();
         dummy.GetScriptScope()["_auto_stop"] <- function() {
-            ::DanceController._onAutoStop(self);
+            ::::DanceController._onAutoStop(self);
         };
         DoEntFire(dummy.GetName(), "RunScriptCode", "_auto_stop()", duration, dummy, dummy);
         printl("[Dance] 动画 '" + seqName + "' 时长 " + duration + " 秒, 定时器已启动");
@@ -404,19 +404,19 @@ DanceController <- {
 
         // 只清理这个 dummy 对应的 session
         local toRemove = null;
-        foreach(i, session in ::DanceController.dummies) {
+        foreach(i, session in ::::DanceController.dummies) {
             if(session.dummy == dummy) { toRemove = i; break; }
         }
-        if(toRemove != null) ::DanceController.dummies.remove(toRemove);
+        if(toRemove != null) ::::DanceController.dummies.remove(toRemove);
 
         // 如果还有其他 dummy 在跳, 不触发全量 cleanup
-        if(::DanceController.dummies.len() > 0) {
+        if(::::DanceController.dummies.len() > 0) {
             // 只 Kill 这个 dummy
             if(dummy != null && dummy.IsValid()) dummy.Kill();
-            printl("[Dance] 还有 " + ::DanceController.dummies.len() + " 个 dummy 活跃, 跳过全量 cleanup");
+            printl("[Dance] 还有 " + ::::DanceController.dummies.len() + " 个 dummy 活跃, 跳过全量 cleanup");
         } else {
             // 最后一个 dummy → 全量清理 (副体1+2+3)
-            ::DanceController._cleanupAll();
+            ::::DanceController._cleanupAll();
         }
     },
 
@@ -436,8 +436,8 @@ DanceController <- {
     // ---- 全量清理 (副体1+2+3) ----
     _cleanupAll = function() {
         printl("[Dance] === _cleanupAll ===");
-        MusicController.stopAll();
-        CameraController.cleanup();
+        ::MusicController.stopAll();
+        ::CameraController.cleanup();
         LyricController.cleanup();
         printl("[Dance] === _cleanupAll 完成 ===");
     },
@@ -460,7 +460,7 @@ function OnGameEvent_player_say(params) {
             printl("[MyDance] 用法: !dance <角色代号> <动作名>");
             return;
         }
-        DanceController.start(player, parts[1].tolower(), parts[2].tolower());
+        ::DanceController.start(player, parts[1].tolower(), parts[2].tolower());
     }
     // --- !dancecam <代号> <动作> (开启相机) ---
     else if(text.find("!dancecam ") == 0) {
@@ -469,18 +469,18 @@ function OnGameEvent_player_say(params) {
             printl("[MyDance] 用法: !dancecam <角色代号> <动作名>");
             return;
         }
-        local old = DanceConfig.camera.enabled;
-        DanceConfig.camera.enabled = true;
-        DanceController.start(player, parts[1].tolower(), parts[2].tolower());
-        DanceConfig.camera.enabled = old;
+        local old = ::DanceConfig.camera.enabled;
+        ::DanceConfig.camera.enabled = true;
+        ::DanceController.start(player, parts[1].tolower(), parts[2].tolower());
+        ::DanceConfig.camera.enabled = old;
     }
     // --- !mytest (兼容旧版: Zoey 跳 d01) ---
     else if(text == "!mytest") {
-        DanceController.start(player, "z", "d01");
+        ::DanceController.start(player, "z", "d01");
     }
     // --- !mystop (强制停止) ---
     else if(text == "!mystop") {
-        DanceController.stopAll();
+        ::DanceController.stopAll();
     }
 }
 
@@ -488,5 +488,5 @@ function OnGameEvent_player_say(params) {
 // 7. 初始化打印
 // ==========================================
 
-printl("[MyDance] DanceConfig.models 注册 " + DanceConfig.models.len() + " 个角色");
-printl("[MyDance] DanceConfig.actions 注册 " + DanceConfig.actions.len() + " 个动作 (相机=" + (DanceConfig.camera.enabled ? "ON" : "OFF") + ")");
+printl("[MyDance] ::DanceConfig.models 注册 " + ::DanceConfig.models.len() + " 个角色");
+printl("[MyDance] ::DanceConfig.actions 注册 " + ::DanceConfig.actions.len() + " 个动作 (相机=" + (::DanceConfig.camera.enabled ? "ON" : "OFF") + ")");
