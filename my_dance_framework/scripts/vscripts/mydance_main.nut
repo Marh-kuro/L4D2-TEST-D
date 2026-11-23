@@ -131,7 +131,7 @@ MusicController <- {
     precache = function(path) {
         if(!IsSoundPrecached(path)) {
             PrecacheSound(path);
-            printl("[Music] 预缓存: %s", path);
+            printl("[Music] 预缓存: " + path);
         }
     },
 
@@ -149,7 +149,7 @@ MusicController <- {
         EmitAmbientSoundOn(path, volume, DanceConfig.music.distance, DanceConfig.music.falloff, attachEntity);
 
         this.activeMusic.append({ path = path, entity = attachEntity });
-        printl("[Music] 开始播放: %s (附着实体: %s)", path, attachEntity.GetName());
+        printl("[Music] 开始播放: " + path + " (附着实体: " + attachEntity.GetName() + ")");
     },
 
     stopAll = function() {
@@ -159,7 +159,7 @@ MusicController <- {
             if(track.entity != null && track.entity.IsValid()) {
                 // 参数顺序: (路径, 附着实体) — 原版签名
                 StopAmbientSoundOn(track.path, track.entity);
-                printl("[Music] 停止: %s", track.path);
+                printl("[Music] 停止: " + track.path);
             }
         }
         this.activeMusic.clear();
@@ -243,7 +243,7 @@ CameraController <- {
             newOrigin.x = newOrigin.x - 9999.0;
             player.SetOrigin(newOrigin);
         }
-        printl("[Camera] 已传送 %d 名玩家到虚空", this.savedOrigins.len());
+        printl("[Camera] 已传送 " + this.savedOrigins.len() + " 名玩家到虚空");
     },
 
     cleanup = function() {
@@ -287,7 +287,7 @@ LyricController <- {
 
     setup = function(actionName, musicPath) {
         // TODO: 未来实现 — SourceMod 菜单 / VScript Panel 显示歌词
-        printl("[Lyric] 占位: setup(%s) — 未实现, 跳过", actionName);
+        printl("[Lyric] 占位: setup(" + actionName + ") — 未实现, 跳过");
     },
 
     cleanup = function() {
@@ -305,19 +305,19 @@ DanceController <- {
 
     // ---- 主入口 ----
     start = function(player, modelCode, actionName) {
-        printl("[Dance] === start 调用 model=%s action=%s ===", modelCode, actionName);
+        printl("[Dance] === start 调用 model=" + modelCode + " action=" + actionName + " ===");
 
         // 5a. 查模型路径 (配置表)
         local modelPath = DanceConfig.models[modelCode];
         if(modelPath == null || modelPath == "") {
-            printl("[Dance] Error: 未知角色代号 '%s'", modelCode);
+            printl("[Dance] Error: 未知角色代号 '" + modelCode + "'");
             return false;
         }
 
         // 5b. 查动作配置 (配置表)
         local actionCfg = DanceConfig.actions[actionName];
         if(actionCfg == null) {
-            printl("[Dance] Error: 未知动作 '%s' — 请在 DanceConfig.actions 里添加", actionName);
+            printl("[Dance] Error: 未知动作 '" + actionName + "' — 请在 DanceConfig.actions 里添加");
             return false;
         }
         local seqName = actionCfg.seq;
@@ -346,7 +346,7 @@ DanceController <- {
         });
 
         if(dummy == null) {
-            printl("[Dance] Error: commentary_dummy spawn 失败 — 确认模型路径 %s 存在", modelPath);
+            printl("[Dance] Error: commentary_dummy spawn 失败 — 确认模型路径 " + modelPath + " 存在");
             CameraController.cleanup();  // 回滚相机 setup
             return false;
         }
@@ -354,7 +354,7 @@ DanceController <- {
         // 5g. 致命守护: sequence 不存在直接删
         local seqId = dummy.LookupSequence(seqName);
         if(seqId == -1) {
-            printl("[Dance] Error: Invalid animation sequence '%s' in model %s", seqName, modelPath);
+            printl("[Dance] Error: Invalid animation sequence '" + seqName + "' in model " + modelPath);
             printl("[Dance] 提示: 如果你替换了角色模型, 原版 d01~d61 sequence 可能丢失");
             dummy.Kill();
             CameraController.cleanup();
@@ -366,7 +366,7 @@ DanceController <- {
 
         // 5i. 施法! 必须用 EntFire (commentary_dummy.SetAnimation() 不是公开方法)
         EntFire(dummy.GetName(), "SetAnimation", seqName);
-        printl("[Dance] EntFire SetAnimation '%s' 已触发", seqName);
+        printl("[Dance] EntFire SetAnimation '" + seqName + "' 已触发");
 
         // 5j. [副体1] 播放音乐 (如果启用)
         if(DanceConfig.music.enabled) {
@@ -392,15 +392,15 @@ DanceController <- {
             ::DanceController._onAutoStop(self);
         };
         DoEntFire(dummy.GetName(), "RunScriptCode", "_auto_stop()", duration, dummy, dummy);
-        printl("[Dance] 动画 '%s' 时长 %.2f 秒, 定时器已启动", seqName, duration);
+        printl("[Dance] 动画 '" + seqName + "' 时长 " + duration + " 秒, 定时器已启动");
 
-        printl("[Dance] === dummy %s spawn 成功, seq=%s ===", dummy.GetName(), seqName);
+        printl("[Dance] === dummy " + dummy.GetName() + " spawn 成功, seq=" + seqName + " ===");
         return true;
     },
 
     // ---- 内部: 定时器触发的自动停止 ----
     _onAutoStop = function(dummy) {
-        printl("[Dance] _onAutoStop 触发 (dummy=%s)", dummy != null ? dummy.GetName() : "null");
+        printl("[Dance] _onAutoStop 触发 (dummy=" + (dummy != null ? dummy.GetName() : "null") + ")");
 
         // 只清理这个 dummy 对应的 session
         local toRemove = null;
@@ -413,7 +413,7 @@ DanceController <- {
         if(::DanceController.dummies.len() > 0) {
             // 只 Kill 这个 dummy
             if(dummy != null && dummy.IsValid()) dummy.Kill();
-            printl("[Dance] 还有 %d 个 dummy 活跃, 跳过全量 cleanup", ::DanceController.dummies.len());
+            printl("[Dance] 还有 " + ::DanceController.dummies.len() + " 个 dummy 活跃, 跳过全量 cleanup");
         } else {
             // 最后一个 dummy → 全量清理 (副体1+2+3)
             ::DanceController._cleanupAll();
@@ -488,5 +488,5 @@ function OnGameEvent_player_say(params) {
 // 7. 初始化打印
 // ==========================================
 
-printl("[MyDance] DanceConfig.models 注册 %d 个角色", DanceConfig.models.len());
-printl("[MyDance] DanceConfig.actions 注册 %d 个动作 (相机=%s)", DanceConfig.actions.len(), DanceConfig.camera.enabled ? "ON" : "OFF");
+printl("[MyDance] DanceConfig.models 注册 " + DanceConfig.models.len() + " 个角色");
+printl("[MyDance] DanceConfig.actions 注册 " + DanceConfig.actions.len() + " 个动作 (相机=" + (DanceConfig.camera.enabled ? "ON" : "OFF") + ")");
