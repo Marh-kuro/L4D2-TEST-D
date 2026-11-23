@@ -1,9 +1,9 @@
 // ============================================================================
-// MyDanceFramework 入口文件 v2.0
-// Source 引擎自动扫描加载所有 director_* 开头的脚本
+// MyDanceFramework v2.0 入口文件
+// 引擎约定钩子名: director_base_addon.nut (Director 初始化时自动加载)
 // ============================================================================
 printl("==================================================");
 printl("[MyDance] MyDanceFramework v2.0 引擎入口文件被加载!");
-printl("[MyDance] Source 引擎版本识别成功");
+printl("[MyDance] Source 引擎版本识别成功 (director_base_addon 钩子)");
 printl("==================================================");
 IncludeScript("mydance_main");
