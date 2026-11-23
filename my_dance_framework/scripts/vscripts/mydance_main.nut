@@ -389,7 +389,7 @@ DanceController <- {
         // 5m. 安全定时清理 — 回调存在 dummy ScriptScope 里, RunScriptCode 直接调
         dummy.ValidateScriptScope();
         dummy.GetScriptScope()["_auto_stop"] <- function() {
-            ::::DanceController._onAutoStop(self);
+            ::DanceController._onAutoStop(self);
         };
         DoEntFire(dummy.GetName(), "RunScriptCode", "_auto_stop()", duration, dummy, dummy);
         printl("[Dance] 动画 '" + seqName + "' 时长 " + duration + " 秒, 定时器已启动");
@@ -404,19 +404,19 @@ DanceController <- {
 
         // 只清理这个 dummy 对应的 session
         local toRemove = null;
-        foreach(i, session in ::::DanceController.dummies) {
+        foreach(i, session in ::DanceController.dummies) {
             if(session.dummy == dummy) { toRemove = i; break; }
         }
-        if(toRemove != null) ::::DanceController.dummies.remove(toRemove);
+        if(toRemove != null) ::DanceController.dummies.remove(toRemove);
 
         // 如果还有其他 dummy 在跳, 不触发全量 cleanup
-        if(::::DanceController.dummies.len() > 0) {
+        if(::DanceController.dummies.len() > 0) {
             // 只 Kill 这个 dummy
             if(dummy != null && dummy.IsValid()) dummy.Kill();
-            printl("[Dance] 还有 " + ::::DanceController.dummies.len() + " 个 dummy 活跃, 跳过全量 cleanup");
+            printl("[Dance] 还有 " + ::DanceController.dummies.len() + " 个 dummy 活跃, 跳过全量 cleanup");
         } else {
             // 最后一个 dummy → 全量清理 (副体1+2+3)
-            ::::DanceController._cleanupAll();
+            ::DanceController._cleanupAll();
         }
     },
 
