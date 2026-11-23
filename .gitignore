@@ -1,8 +1,5 @@
-﻿# 原版 VPK 解压目录
-*Part3-1.workshop/
-*Part3-2.workshop/
-*Part3-3.workshop/
-*Anims_Base.workshop/
+﻿# 原版 VPK 解压目录 (用户本地管理器生成)
+*.workshop/
 # 临时构建产物
 *.vpk
 sdk_temp/
