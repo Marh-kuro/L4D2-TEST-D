@@ -19,7 +19,7 @@ printl("[MyDance]          !mytest (兼容旧版)");
 // 0. 基础工具函数
 // ==========================================
 
-function ::GetPlayerLookPos(player) {
+function GetPlayerLookPos(player) {
     local startPt = player.EyePosition();
     local Angle = player.EyeAngles();
     local endPt = startPt + Angle.Forward().Scale(9999);
