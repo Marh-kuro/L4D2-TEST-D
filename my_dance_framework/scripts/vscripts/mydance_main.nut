@@ -19,7 +19,7 @@ printl("[MyDance]          !mytest (兼容旧版)");
 // 0. 基础工具函数
 // ==========================================
 
-function GetPlayerLookPos(player) {
+::GetPlayerLookPos <- function(player) {
     local startPt = player.EyePosition();
     local Angle = player.EyeAngles();
     local endPt = startPt + Angle.Forward().Scale(9999);
@@ -27,7 +27,7 @@ function GetPlayerLookPos(player) {
     TraceLine(m_trace);
     if(m_trace.hit) return m_trace.pos;
     return null;
-}
+};
 
 function GetCurrentSurvivorCode(player) {
     // 从 player 的模型路径反推角色代号（简化版）
