@@ -105,10 +105,10 @@ DanceConfig <- {
 
     // ---- 命令注册 ----
     commands = {
-        "!dance"  = "start",
-        "!dancecam" = "start_with_camera",
-        "!mytest" = "legacy_start",  // 兼容旧版: Zoey 跳 d01
-        "!mystop" = "stop_all",
+        "!dance"  : "start",
+        "!dancecam" : "start_with_camera",
+        "!mytest" : "legacy_start",  // 兼容旧版: Zoey 跳 d01
+        "!mystop" : "stop_all",
     },
 };
 
